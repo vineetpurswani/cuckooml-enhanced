@@ -6,6 +6,8 @@
 import logging
 import re
 
+from modules.processing.cuckooml import Instance
+
 try:
     import requests
     HAVE_REQUESTS = True
@@ -135,6 +137,11 @@ class VirusTotalAPI(object):
                     if normalized.lower() not in norm_lower:
                         results["normalized"].append(normalized)
                         norm_lower.append(normalized.lower())
+
+            # labeller = Instance()
+            # for label_type in norm_lower:
+            #     labeller.label_sample(norm_lower[label_type])
+            #     results["normalized"][label_type] = labeller.label
 
         return results
 

@@ -322,6 +322,55 @@ class PortableExecutable(object):
 
         return ret
 
+
+
+    def __get_option_headers(self):
+        extracted_features = {}
+
+        try:
+            extracted_features['magic'] = self.pe.OPTIONAL_HEADER.Magic
+            extracted_features['major_linker_version'] = self.pe.OPTIONAL_HEADER.MajorLinkerVersion
+            extracted_features['minor_linker_version'] = self.pe.OPTIONAL_HEADER.MinorLinkerVersion
+            extracted_features['size_init_data'] = self.pe.OPTIONAL_HEADER.SizeOfInitializedData
+            extracted_features['size_uninit_data'] = self.pe.OPTIONAL_HEADER.SizeOfUninitializedData
+            extracted_features['section_alignment'] = self.pe.OPTIONAL_HEADER.SectionAlignment
+            extracted_features['file_alignment'] = self.pe.OPTIONAL_HEADER.FileAlignment
+            extracted_features['major_operating_system_version'] = self.pe.OPTIONAL_HEADER.MajorOperatingSystemVersion
+            extracted_features['minor_operating_system_version'] = self.pe.OPTIONAL_HEADER.MinorOperatingSystemVersion
+            extracted_features['major_image_version'] = self.pe.OPTIONAL_HEADER.MajorImageVersion
+            extracted_features['minor_image_version'] = self.pe.OPTIONAL_HEADER.MinorImageVersion
+            extracted_features['major_subsystem_version'] = self.pe.OPTIONAL_HEADER.MajorSubsystemVersion
+            extracted_features['minor_subsystem_version'] = self.pe.OPTIONAL_HEADER.MinorSubsystemVersion
+            extracted_features['size_of_headers'] = self.pe.OPTIONAL_HEADER.SizeOfHeaders
+            extracted_features['subsystem'] = self.pe.OPTIONAL_HEADER.Subsystem
+            extracted_features['dll_charactersitics'] = self.pe.OPTIONAL_HEADER.DllCharacteristics
+            extracted_features['loader_flags'] = self.pe.OPTIONAL_HEADER.LoaderFlags
+            extracted_features['number_of_imports'] = len(self.pe.DIRECTORY_ENTRY_IMPORT)
+            extracted_features['address_of_entry_point'] = self.pe.OPTIONAL_HEADER.AddressOfEntryPoint
+            extracted_features['size_of_headers'] = self.pe.OPTIONAL_HEADER.SizeOfHeaders
+            extracted_features['check_sum'] = self.pe.OPTIONAL_HEADER.CheckSum
+            extracted_features['size_of_stack_reserve'] = float(self.pe.OPTIONAL_HEADER.SizeOfStackReserve)
+            extracted_features['size_of_stack_commit'] = float(self.pe.OPTIONAL_HEADER.SizeOfStackCommit)
+            extracted_features['size_of_heap_reserve'] = float(self.pe.OPTIONAL_HEADER.SizeOfHeapReserve)
+            extracted_features['size_of_heap_commit'] = float(self.pe.OPTIONAL_HEADER.SizeOfHeapCommit)
+            extracted_features['image_base'] = float(self.pe.OPTIONAL_HEADER.ImageBase)
+            extracted_features['size_image'] = self.pe.OPTIONAL_HEADER.SizeOfImage
+            extracted_features['base_of_code'] = self.pe.OPTIONAL_HEADER.BaseOfCode
+            extracted_features['base_of_data'] = self.pe.OPTIONAL_HEADER.BaseOfData
+            extracted_features['number_of_rva_and_sizes'] = self.pe.OPTIONAL_HEADER.NumberOfRvaAndSizes
+            extracted_features['number_of_IAT_entires'] = (self.pe.OPTIONAL_HEADER.DATA_DIRECTORY[12].Size)/4
+
+            for index in range(min(15, len(self.pe.OPTIONAL_HEADER.DATA_DIRECTORY))):
+                extracted_features[self.pe.OPTIONAL_HEADER.DATA_DIRECTORY[index].name + '_rva'] = \
+                    self.pe.OPTIONAL_HEADER.DATA_DIRECTORY[index].VirtualAddress
+                extracted_features[self.pe.OPTIONAL_HEADER.DATA_DIRECTORY[index].name + '_size'] = \
+                    self.pe.OPTIONAL_HEADER.DATA_DIRECTORY[index].Size
+
+            return extracted_features
+        except AttributeError:
+            return extracted_features
+
+
     def run(self):
         """Run analysis.
         @return: analysis results dict or None.
@@ -345,6 +394,7 @@ class PortableExecutable(object):
         results["pe_timestamp"] = self._get_timestamp()
         results["pdb_path"] = self._get_pdb_path()
         results["signature"] = self._get_signature()
+        results["optional_headers"] = self.__get_option_headers()
         results["imported_dll_count"] = len([x for x in results["pe_imports"] if x.get("dll")])
         return results
 

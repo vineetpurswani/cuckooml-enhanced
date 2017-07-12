@@ -68,7 +68,7 @@ def check_configs():
         "auxiliary.conf", "avd.conf", "cuckoo.conf", "esx.conf", "kvm.conf",
         "memory.conf", "physical.conf", "processing.conf", "qemu.conf",
         "reporting.conf", "virtualbox.conf", "vmware.conf", "vpn.conf",
-        "vsphere.conf", "xenserver.conf",
+        "vsphere.conf", "xenserver.conf", "cuckooml.conf",
     )
 
     for config in [os.path.join(CUCKOO_ROOT, "conf", f) for f in configs]:

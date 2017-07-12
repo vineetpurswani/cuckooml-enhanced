@@ -39,3 +39,8 @@ venv
 # Python package stuff
 lib/python2.7/
 build/
+
+# Data folder
+data/
+sample_data/
+
